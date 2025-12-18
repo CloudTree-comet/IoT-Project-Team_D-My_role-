@@ -63,11 +63,53 @@
             font-weight: 400;
         }
 
+        .scroll-indicator {
+            position: absolute;
+            bottom: 3rem;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 24px;
+            height: 40px;
+            border: 2px solid var(--primary);
+            border-radius: 12px;
+            opacity: 0.3;
+        }
+
+        .scroll-indicator::after {
+            content: '';
+            position: absolute;
+            top: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 4px;
+            height: 8px;
+            background: var(--primary);
+            border-radius: 2px;
+            animation: scroll 2s infinite;
+        }
+
+        @keyframes scroll {
+            0%, 100% { transform: translateX(-50%) translateY(0); opacity: 1; }
+            50% { transform: translateX(-50%) translateY(10px); opacity: 0.3; }
+        }
+
         /* Section */
         section {
             padding: 8rem 2rem;
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
+            width: 100%;
+        }
+
+        section.dark {
+            max-width: none;
+            width: 100%;
+        }
+
+        section.dark > * {
+            max-width: 1400px;
+            margin-left: auto;
+            margin-right: auto;
         }
 
         .section-title {
@@ -119,9 +161,9 @@
         }
 
         .card-selector button.active {
-            background: var(--accent);
+            background: var(--primary);
             color: var(--bg);
-            border-color: var(--accent);
+            border-color: var(--primary);
         }
 
         .card-stack {
@@ -191,7 +233,7 @@
             transform: translateY(-50%);
             width: 8px;
             height: 8px;
-            background: var(--accent);
+            background: var(--primary);
             border-radius: 50%;
         }
 
@@ -200,11 +242,13 @@
             background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
             padding: 8rem 2rem;
             margin: 4rem 0;
+            max-width: none !important;
         }
 
         .hardware-content {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
+            width: 100%;
         }
 
         .hardware-grid {
@@ -212,6 +256,7 @@
             grid-template-columns: 1fr 1fr;
             gap: 3rem;
             margin-top: 3rem;
+            align-items: start;
         }
 
         .hardware-image-container {
@@ -229,10 +274,7 @@
         }
 
         .feature-explanation {
-            background: white;
-            padding: 3rem;
-            border-radius: 20px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            padding: 0;
         }
 
         .feature-explanation h3 {
@@ -244,27 +286,27 @@
 
         .feature-item {
             margin-bottom: 2rem;
-            padding-bottom: 2rem;
-            border-bottom: 1px solid var(--border);
+            padding: 2rem;
+            background: #6c757d;
+            color: white;
+            border-radius: 12px;
         }
 
         .feature-item:last-child {
-            border-bottom: none;
             margin-bottom: 0;
-            padding-bottom: 0;
         }
 
         .feature-item h4 {
             font-size: 1.3rem;
             font-weight: 600;
             margin-bottom: 0.75rem;
-            color: var(--primary);
+            color: white;
         }
 
         .feature-item .label {
             display: inline-block;
             padding: 0.3rem 0.8rem;
-            background: var(--accent);
+            background: rgba(255, 255, 255, 0.2);
             color: white;
             border-radius: 6px;
             font-size: 0.85rem;
@@ -273,7 +315,7 @@
         }
 
         .feature-item p {
-            color: var(--secondary);
+            color: rgba(255, 255, 255, 0.95);
             font-size: 1rem;
             line-height: 1.7;
         }
@@ -281,6 +323,13 @@
         /* Modular Framework */
         .modular-section {
             background: white;
+            max-width: none !important;
+        }
+
+        .modular-section > * {
+            max-width: 1400px;
+            margin-left: auto;
+            margin-right: auto;
         }
 
         .modular-explanation {
@@ -364,6 +413,13 @@
             color: white;
             padding: 8rem 2rem;
             margin: 4rem 0;
+            max-width: none !important;
+        }
+
+        .code-section .section-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
         }
 
         .code-section .section-title {
@@ -404,8 +460,9 @@
         }
 
         .code-display {
-            max-width: 1100px;
+            max-width: 1300px;
             margin: 0 auto;
+            width: 100%;
         }
 
         .code-panel {
@@ -415,6 +472,17 @@
 
         .code-panel.active {
             display: block;
+        }
+
+        .code-description {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.6;
         }
 
         @keyframes fadeIn {
@@ -484,11 +552,13 @@
         /* Wokwi Section */
         .wokwi-section {
             background: var(--surface);
+            max-width: none !important;
         }
 
         .wokwi-content {
-            max-width: 1100px;
+            max-width: 1400px;
             margin: 0 auto;
+            width: 100%;
         }
 
         .wokwi-grid {
@@ -602,6 +672,7 @@
                 Building the foundation for intelligent pet feeding.
             </p>
         </div>
+        <div class="scroll-indicator"></div>
     </div>
 
     <!-- Architecture Section with Card Stack -->
@@ -782,6 +853,7 @@
 
     <!-- Code Architecture -->
     <section class="code-section">
+        <div class="section-content">
         <h2 class="section-title">Code Architecture</h2>
         <p class="section-subtitle">Core implementations and hardware abstractions</p>
 
@@ -829,6 +901,11 @@
             </div>
 
             <div class="code-panel" data-panel="1">
+                <p class="code-description">
+                    Defines the core data structures for feeding schedules and system state management. 
+                    The FeedingSlot struct stores scheduled feeding times and amounts, while state variables track real-time system status.
+                </p>
+                
                 <div class="code-window">
                     <div class="code-header">
                         <div class="dots">
@@ -869,6 +946,11 @@
             </div>
 
             <div class="code-panel" data-panel="2">
+                <p class="code-description">
+                    Abstracts weight measurement to support both Wokwi simulation and real hardware. 
+                    In simulation mode, weight increases gradually during feeding. In hardware mode, it reads actual HX711 load cell data with averaging for stability.
+                </p>
+                
                 <div class="code-window">
                     <div class="code-header">
                         <div class="dots">
@@ -910,6 +992,11 @@
             </div>
 
             <div class="code-panel" data-panel="3">
+                <p class="code-description">
+                    Provides hardware control functions for the servo motor that operates the feeder gate. 
+                    Includes open/close operations and system reset functionality to return to a known safe state.
+                </p>
+                
                 <div class="code-window">
                     <div class="code-header">
                         <div class="dots">
@@ -965,6 +1052,11 @@
             </div>
 
             <div class="code-panel" data-panel="4">
+                <p class="code-description">
+                    Initializes all hardware peripherals in the correct sequence. 
+                    Configures I2C bus, button pins, LCD display, RTC clock, servo motor, and HX711 load cell with proper calibration and error handling.
+                </p>
+                
                 <div class="code-window">
                     <div class="code-header">
                         <div class="dots">
@@ -1024,6 +1116,7 @@
                     </div>
                 </div>
             </div>
+        </div>
         </div>
     </section>
 
