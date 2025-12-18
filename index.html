@@ -1,0 +1,1205 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minseok Lim - Hardware Architect</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #000;
+            --secondary: #86868b;
+            --accent: #0071e3;
+            --bg: #fff;
+            --surface: #f5f5f7;
+            --border: #d2d2d7;
+            --code-bg: #1e1e1e;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
+            background: var(--bg);
+            color: var(--primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 2rem;
+            background: linear-gradient(135deg, #f5f5f7 0%, #e8e8ed 100%);
+        }
+
+        .hero-content h1 {
+            font-size: clamp(3rem, 8vw, 6rem);
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            margin-bottom: 1rem;
+            line-height: 1.1;
+        }
+
+        .hero-content .subtitle {
+            font-size: clamp(1.5rem, 3vw, 2.5rem);
+            font-weight: 300;
+            color: var(--secondary);
+            margin-bottom: 2rem;
+        }
+
+        .hero-content .description {
+            font-size: clamp(1rem, 2vw, 1.25rem);
+            color: var(--secondary);
+            max-width: 800px;
+            margin: 0 auto;
+            font-weight: 400;
+        }
+
+        /* Section */
+        section {
+            padding: 8rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .section-subtitle {
+            font-size: clamp(1rem, 2vw, 1.25rem);
+            color: var(--secondary);
+            text-align: center;
+            margin-bottom: 4rem;
+            font-weight: 400;
+        }
+
+        /* Card Stack Architecture */
+        .card-stack-container {
+            perspective: 1000px;
+            margin-top: 4rem;
+        }
+
+        .card-selector {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 3rem;
+        }
+
+        .card-selector button {
+            padding: 1rem 2rem;
+            background: var(--surface);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: var(--primary);
+        }
+
+        .card-selector button:hover {
+            background: var(--primary);
+            color: var(--bg);
+            border-color: var(--primary);
+        }
+
+        .card-selector button.active {
+            background: var(--accent);
+            color: var(--bg);
+            border-color: var(--accent);
+        }
+
+        .card-stack {
+            position: relative;
+            height: 500px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .architecture-card {
+            position: absolute;
+            width: 100%;
+            background: var(--bg);
+            border-radius: 24px;
+            padding: 3rem;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            border: 1px solid var(--border);
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            opacity: 0;
+            transform: translateY(30px) scale(0.95);
+            pointer-events: none;
+        }
+
+        .architecture-card.active {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            pointer-events: auto;
+            z-index: 10;
+        }
+
+        .architecture-card.prev {
+            opacity: 0.3;
+            transform: translateY(10px) scale(0.98);
+            z-index: 5;
+        }
+
+        .architecture-card h3 {
+            font-size: 2rem;
+            font-weight: 600;
+            margin-bottom: 2rem;
+            color: var(--primary);
+        }
+
+        .architecture-card ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .architecture-card li {
+            padding: 1rem 0;
+            padding-left: 2rem;
+            color: var(--secondary);
+            font-size: 1.1rem;
+            position: relative;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .architecture-card li:last-child {
+            border-bottom: none;
+        }
+
+        .architecture-card li::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 8px;
+            height: 8px;
+            background: var(--accent);
+            border-radius: 50%;
+        }
+
+        /* Hardware Design Section */
+        .hardware-section {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 8rem 2rem;
+            margin: 4rem 0;
+        }
+
+        .hardware-content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .hardware-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            margin-top: 3rem;
+        }
+
+        .hardware-image-container {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .hardware-image {
+            width: 100%;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+            background: white;
+            padding: 1rem;
+        }
+
+        .feature-explanation {
+            background: white;
+            padding: 3rem;
+            border-radius: 20px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        }
+
+        .feature-explanation h3 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 2rem;
+            color: var(--primary);
+        }
+
+        .feature-item {
+            margin-bottom: 2rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .feature-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .feature-item h4 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            color: var(--primary);
+        }
+
+        .feature-item .label {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            background: var(--accent);
+            color: white;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+
+        .feature-item p {
+            color: var(--secondary);
+            font-size: 1rem;
+            line-height: 1.7;
+        }
+
+        /* Modular Framework */
+        .modular-section {
+            background: white;
+        }
+
+        .modular-explanation {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: var(--surface);
+            padding: 3rem;
+            border-radius: 24px;
+            margin-bottom: 3rem;
+        }
+
+        .modular-explanation h3 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: var(--primary);
+        }
+
+        .modular-explanation p {
+            font-size: 1.1rem;
+            color: var(--secondary);
+            line-height: 1.8;
+            margin-bottom: 1.5rem;
+        }
+
+        .benefit-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .benefit-card {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 20px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            transition: transform 0.3s ease;
+        }
+
+        .benefit-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .benefit-card h4 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+
+        .benefit-card .tag {
+            display: inline-block;
+            padding: 0.4rem 1rem;
+            background: #e3f2fd;
+            color: #1976d2;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .benefit-card p {
+            color: var(--secondary);
+            font-size: 1rem;
+            line-height: 1.7;
+        }
+
+        .modular-image {
+            width: 100%;
+            max-width: 800px;
+            margin: 3rem auto;
+            display: block;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+        }
+
+        /* Code Section */
+        .code-section {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: white;
+            padding: 8rem 2rem;
+            margin: 4rem 0;
+        }
+
+        .code-section .section-title {
+            color: white;
+        }
+
+        .code-section .section-subtitle {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .code-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 3rem;
+        }
+
+        .code-tab-btn {
+            padding: 1rem 2rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: white;
+        }
+
+        .code-tab-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .code-tab-btn.active {
+            background: var(--accent);
+            border-color: var(--accent);
+        }
+
+        .code-display {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .code-panel {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .code-panel.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .code-window {
+            background: #1e1e1e;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        }
+
+        .code-header {
+            background: #2d2d30;
+            padding: 1rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            border-bottom: 1px solid #3e3e42;
+        }
+
+        .code-header .dots {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .code-header .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .dot.red { background: #ff5f56; }
+        .dot.yellow { background: #ffbd2e; }
+        .dot.green { background: #27c93f; }
+
+        .code-header .filename {
+            color: #cccccc;
+            font-size: 0.9rem;
+        }
+
+        .code-body {
+            padding: 2rem;
+            overflow-x: auto;
+        }
+
+        .code-body pre {
+            margin: 0;
+            font-family: 'SF Mono', 'Monaco', 'Courier New', monospace;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        /* VS Code Syntax Highlighting */
+        .code-keyword { color: #569cd6; }
+        .code-function { color: #dcdcaa; }
+        .code-string { color: #ce9178; }
+        .code-number { color: #b5cea8; }
+        .code-comment { color: #6a9955; font-style: italic; }
+        .code-type { color: #4ec9b0; }
+        .code-variable { color: #9cdcfe; }
+        .code-constant { color: #4fc1ff; }
+        .code-preprocessor { color: #c586c0; }
+
+        /* Wokwi Section */
+        .wokwi-section {
+            background: var(--surface);
+        }
+
+        .wokwi-content {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .wokwi-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            margin-top: 3rem;
+            align-items: start;
+        }
+
+        .circuit-image {
+            width: 100%;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+            background: white;
+            padding: 1rem;
+        }
+
+        .json-display {
+            background: #1e1e1e;
+            border-radius: 12px;
+            padding: 2rem;
+            overflow-x: auto;
+            max-height: 500px;
+        }
+
+        .json-display pre {
+            margin: 0;
+            font-family: 'SF Mono', 'Monaco', 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #d4d4d4;
+        }
+
+        .download-btn {
+            display: inline-block;
+            padding: 1rem 2.5rem;
+            background: var(--accent);
+            color: white;
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            margin-top: 2rem;
+        }
+
+        .download-btn:hover {
+            background: #0077ed;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 113, 227, 0.3);
+        }
+
+        /* Footer */
+        footer {
+            background: var(--primary);
+            color: var(--bg);
+            padding: 4rem 2rem;
+            text-align: center;
+        }
+
+        footer p {
+            margin: 0.5rem 0;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        footer a {
+            color: var(--accent);
+            text-decoration: none;
+            transition: opacity 0.3s ease;
+        }
+
+        footer a:hover {
+            opacity: 0.8;
+        }
+
+        /* Responsive */
+        @media (max-width: 968px) {
+            section {
+                padding: 4rem 1.5rem;
+            }
+
+            .hardware-grid,
+            .wokwi-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .card-stack {
+                height: auto;
+                min-height: 400px;
+            }
+
+            .benefit-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+    </style>
+</head>
+<body>
+    <!-- Hero -->
+    <div class="hero">
+        <div class="hero-content">
+            <h1>Minseok Lim</h1>
+            <p class="subtitle">Hardware & Firmware Architect</p>
+            <p class="description">
+                Designing precision IoT systems with ESP32.<br>
+                Building the foundation for intelligent pet feeding.
+            </p>
+        </div>
+    </div>
+
+    <!-- Architecture Section with Card Stack -->
+    <section>
+        <h2 class="section-title">Architecture</h2>
+        <p class="section-subtitle">Four pillars of hardware and firmware design</p>
+
+        <div class="card-stack-container">
+            <div class="card-selector">
+                <button class="active" onclick="showArchCard(0)">Hardware & Wokwi</button>
+                <button onclick="showArchCard(1)">Firmware Skeleton</button>
+                <button onclick="showArchCard(2)">Hardware Functions</button>
+                <button onclick="showArchCard(3)">Data Structures</button>
+            </div>
+
+            <div class="card-stack">
+                <div class="architecture-card active" data-card="0">
+                    <h3>Hardware & Wokwi</h3>
+                    <ul>
+                        <li>ESP32 diagram.json design and complete pin mapping</li>
+                        <li>PlatformIO configuration for library management</li>
+                        <li>Wokwi simulation setup for virtual testing environment</li>
+                        <li>Pin mapping & electrical connections for all peripherals</li>
+                        <li>Breadboard layout optimization for signal integrity</li>
+                    </ul>
+                </div>
+
+                <div class="architecture-card" data-card="1">
+                    <h3>Firmware Skeleton</h3>
+                    <ul>
+                        <li>Complete setup() initialization sequence for all hardware</li>
+                        <li>Main loop architecture with modular function hooks</li>
+                        <li>I2C bus initialization for RTC and LCD communication</li>
+                        <li>Peripheral initialization (servo, HX711, buttons)</li>
+                        <li>Team collaboration framework for parallel development</li>
+                    </ul>
+                </div>
+
+                <div class="architecture-card" data-card="2">
+                    <h3>Hardware Functions</h3>
+                    <ul>
+                        <li>Weight reading abstraction for simulation and real hardware</li>
+                        <li>Servo control functions (open/close feeder mechanism)</li>
+                        <li>Button handling with debounce logic</li>
+                        <li>System reset procedures and state management</li>
+                        <li>Hardware safety mechanisms and error handling</li>
+                    </ul>
+                </div>
+
+                <div class="architecture-card" data-card="3">
+                    <h3>Data Structures</h3>
+                    <ul>
+                        <li>FeedingSlot struct design for scheduled feeding</li>
+                        <li>State management flags (feedingActive, feederOpen)</li>
+                        <li>Safety constants (timeout, stuck detection thresholds)</li>
+                        <li>Trigger guard system to prevent duplicate activations</li>
+                        <li>Unified data interface for team collaboration</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Hardware Design Section -->
+    <section class="hardware-section">
+        <div class="hardware-content">
+            <h2 class="section-title">Hardware Design</h2>
+            <p class="section-subtitle">Precision-engineered for stability and efficiency</p>
+
+            <div class="hardware-grid">
+                <div class="hardware-image-container">
+                    <img src="hardware-diagram.png" alt="Hardware Wiring Diagram" class="hardware-image">
+                    <img src="hardware-circuit.png" alt="Circuit Schematic" class="hardware-image">
+                </div>
+
+                <div class="feature-explanation">
+                    <h3>Design Philosophy & Implementation</h3>
+
+                    <div class="feature-item">
+                        <span class="label">I2C Bus Sharing</span>
+                        <h4>Resource Efficiency Through Shared Communication</h4>
+                        <p>
+                            Designed a shared I2C bus (SDA=21, SCL=22) connecting both RTC and LCD modules. 
+                            This architecture maximizes GPIO pin efficiency by controlling multiple peripherals 
+                            with just two communication lines, leaving more pins available for sensors and actuators.
+                        </p>
+                    </div>
+
+                    <div class="feature-item">
+                        <span class="label">Power Rail Separation</span>
+                        <h4>3.3V / 5V Voltage Isolation for Noise Immunity</h4>
+                        <p>
+                            Implemented separate power rails: 3.3V for ESP32 logic and 5V for servo motor and LCD. 
+                            This separation prevents motor noise from coupling into the sensitive MCU logic, 
+                            ensuring stable operation and preventing random resets or data corruption.
+                        </p>
+                    </div>
+
+                    <div class="feature-item">
+                        <span class="label">Precision Measurement</span>
+                        <h4>0.1g Accuracy with HX711 Load Cell Amplifier</h4>
+                        <p>
+                            Integrated HX711 24-bit ADC amplifier for weight measurement. The amplifier converts 
+                            micro-volt signals from the load cell into digital values with 0.1g precision through 
+                            careful calibration, enabling accurate food portion control.
+                        </p>
+                    </div>
+
+                    <div class="feature-item">
+                        <span class="label">User Interface</span>
+                        <h4>Four-Button Layout with Internal Pull-up Resistors</h4>
+                        <p>
+                            Designed an intuitive 4-button interface using ESP32's internal pull-up resistors, 
+                            eliminating external components. Buttons connect directly to ground, reducing wiring 
+                            complexity and improving reliability while providing full control capabilities.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Modular Framework -->
+    <section class="modular-section">
+        <h2 class="section-title">Modular Framework</h2>
+        <p class="section-subtitle">Enabling seamless team collaboration through systematic architecture</p>
+
+        <div class="modular-explanation">
+            <h3>What is the Modular Framework?</h3>
+            <p>
+                The modular framework is a software architecture pattern that divides the firmware into 
+                independent, self-contained modules. Each team member can develop their assigned functionality 
+                (UI handling, core logic, web API) in isolation, then integrate seamlessly through well-defined 
+                interfaces and shared data structures.
+            </p>
+            <p>
+                This approach eliminated merge conflicts, enabled parallel development, and allowed us to test 
+                each component independently before system integration. The skeleton provides clear hooks where 
+                each person's code plugs in without affecting others' work.
+            </p>
+        </div>
+
+        <div class="benefit-grid">
+            <div class="benefit-card">
+                <span class="tag">Data Integrity</span>
+                <h4>Standard Data Structure</h4>
+                <p>
+                    Defined a unified FeedingSlot structure and consistent state variables that all team 
+                    members must use. This prevents variable naming conflicts and ensures data integrity 
+                    across modules. Everyone reads and writes to the same memory locations with the same 
+                    data types.
+                </p>
+            </div>
+
+            <div class="benefit-card">
+                <span class="tag">Parallel Development</span>
+                <h4>Independent Module Development</h4>
+                <p>
+                    Created clear function boundaries (handleButtons, coreLogicLoop, handleApiLoop) that 
+                    allow team members to work simultaneously without code conflicts. Each module has its 
+                    own scope and responsibility, reducing dependencies and integration issues.
+                </p>
+            </div>
+
+            <div class="benefit-card">
+                <span class="tag">Testing & Validation</span>
+                <h4>100% Wokwi Simulation Testbed</h4>
+                <p>
+                    Built a complete simulation layer that abstracts hardware differences (simulated vs. 
+                    real weight sensor). This allows testing all logic paths in Wokwi before hardware 
+                    deployment, catching bugs early and validating team integration points virtually.
+                </p>
+            </div>
+        </div>
+
+        <img src="modular-architecture.png" alt="Modular Architecture Diagram" class="modular-image">
+    </section>
+
+    <!-- Code Architecture -->
+    <section class="code-section">
+        <h2 class="section-title">Code Architecture</h2>
+        <p class="section-subtitle">Core implementations and hardware abstractions</p>
+
+        <div class="code-tabs">
+            <button class="code-tab-btn active" onclick="showCodePanel(0)">Pin Definitions</button>
+            <button class="code-tab-btn" onclick="showCodePanel(1)">Data Structures</button>
+            <button class="code-tab-btn" onclick="showCodePanel(2)">Weight Reading</button>
+            <button class="code-tab-btn" onclick="showCodePanel(3)">Feeder Control</button>
+            <button class="code-tab-btn" onclick="showCodePanel(4)">Setup Function</button>
+        </div>
+
+        <div class="code-display">
+            <div class="code-panel active" data-panel="0">
+                <div class="code-window">
+                    <div class="code-header">
+                        <div class="dots">
+                            <span class="dot red"></span>
+                            <span class="dot yellow"></span>
+                            <span class="dot green"></span>
+                        </div>
+                        <span class="filename">main.cpp - Hardware Pins</span>
+                    </div>
+                    <div class="code-body">
+                        <pre><code><span class="code-comment">// ---- Pin Definitions ----</span>
+<span class="code-comment">// HX711 load cell amplifier pins</span>
+<span class="code-preprocessor">#define</span> <span class="code-constant">HX711_DT_PIN</span>   <span class="code-number">4</span>
+<span class="code-preprocessor">#define</span> <span class="code-constant">HX711_SCK_PIN</span>  <span class="code-number">5</span>
+
+<span class="code-comment">// Servo motor PWM pin</span>
+<span class="code-preprocessor">#define</span> <span class="code-constant">SERVO_PIN</span>      <span class="code-number">18</span>
+
+<span class="code-comment">// User interface button pins (active LOW with internal pull-up)</span>
+<span class="code-preprocessor">#define</span> <span class="code-constant">BUTTON_DISPLAY</span> <span class="code-number">12</span>   <span class="code-comment">// Toggle display mode</span>
+<span class="code-preprocessor">#define</span> <span class="code-constant">BUTTON_SETTING</span> <span class="code-number">13</span>   <span class="code-comment">// Enter/confirm settings</span>
+<span class="code-preprocessor">#define</span> <span class="code-constant">BUTTON_UP</span>      <span class="code-number">14</span>   <span class="code-comment">// Navigate up / increase value</span>
+<span class="code-preprocessor">#define</span> <span class="code-constant">BUTTON_DOWN</span>    <span class="code-number">15</span>   <span class="code-comment">// Navigate down / decrease value</span>
+
+<span class="code-comment">// ---- Hardware Objects ----</span>
+<span class="code-type">RTC_DS1307</span> rtc;                          <span class="code-comment">// Real-time clock module</span>
+<span class="code-type">LiquidCrystal_I2C</span> lcd(<span class="code-number">0x27</span>, <span class="code-number">20</span>, <span class="code-number">4</span>);  <span class="code-comment">// 20x4 LCD with I2C</span>
+<span class="code-type">Servo</span> feedServo;                        <span class="code-comment">// Feeder gate servo</span>
+<span class="code-type">HX711</span> scale;                            <span class="code-comment">// Load cell amplifier</span></code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <div class="code-panel" data-panel="1">
+                <div class="code-window">
+                    <div class="code-header">
+                        <div class="dots">
+                            <span class="dot red"></span>
+                            <span class="dot yellow"></span>
+                            <span class="dot green"></span>
+                        </div>
+                        <span class="filename">main.cpp - Data Structures</span>
+                    </div>
+                    <div class="code-body">
+                        <pre><code><span class="code-comment">// ---- Feeding Slot Structure ----</span>
+<span class="code-keyword">struct</span> <span class="code-type">FeedingSlot</span> {
+  <span class="code-type">bool</span>  active;    <span class="code-comment">// Is this slot enabled?</span>
+  <span class="code-type">int</span>   hour;      <span class="code-comment">// Scheduled hour (0-23)</span>
+  <span class="code-type">int</span>   minute;    <span class="code-comment">// Scheduled minute (0-59)</span>
+  <span class="code-type">float</span> weight;    <span class="code-comment">// Target weight in grams</span>
+};
+
+<span class="code-comment">// Three scheduled feeding slots</span>
+<span class="code-type">FeedingSlot</span> slots[<span class="code-number">3</span>] = {
+  {<span class="code-keyword">false</span>, <span class="code-number">8</span>, <span class="code-number">0</span>, <span class="code-number">0</span>},   <span class="code-comment">// Slot 1: 08:00</span>
+  {<span class="code-keyword">false</span>, <span class="code-number">12</span>, <span class="code-number">0</span>, <span class="code-number">0</span>},  <span class="code-comment">// Slot 2: 12:00</span>
+  {<span class="code-keyword">false</span>, <span class="code-number">18</span>, <span class="code-number">0</span>, <span class="code-number">0</span>}   <span class="code-comment">// Slot 3: 18:00</span>
+};
+
+<span class="code-comment">// ---- System State Variables ----</span>
+<span class="code-type">bool</span> feedingActive = <span class="code-keyword">false</span>;      <span class="code-comment">// Is feeding in progress?</span>
+<span class="code-type">bool</span> feederOpen = <span class="code-keyword">false</span>;          <span class="code-comment">// Is feeder gate open?</span>
+<span class="code-type">float</span> currentWeight = <span class="code-number">0.0f</span>;        <span class="code-comment">// Current bowl weight (g)</span>
+<span class="code-type">float</span> currentTargetWeight = <span class="code-number">0</span>;    <span class="code-comment">// Target weight (g)</span>
+
+<span class="code-comment">// ---- Safety Constants ----</span>
+<span class="code-keyword">const</span> <span class="code-type">unsigned long</span> <span class="code-constant">FEED_TIMEOUT_MS</span> = <span class="code-number">15000</span>;  <span class="code-comment">// 15 sec max</span>
+<span class="code-keyword">const</span> <span class="code-type">unsigned long</span> <span class="code-constant">STUCK_WINDOW_MS</span> = <span class="code-number">4000</span>;   <span class="code-comment">// 4 sec stuck detect</span>
+<span class="code-keyword">const</span> <span class="code-type">float</span> <span class="code-constant">MIN_INCREASE_G</span> = <span class="code-number">2.0</span>;              <span class="code-comment">// Noise threshold</span></code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <div class="code-panel" data-panel="2">
+                <div class="code-window">
+                    <div class="code-header">
+                        <div class="dots">
+                            <span class="dot red"></span>
+                            <span class="dot yellow"></span>
+                            <span class="dot green"></span>
+                        </div>
+                        <span class="filename">main.cpp - Weight Reading</span>
+                    </div>
+                    <div class="code-body">
+                        <pre><code><span class="code-comment">// ---- Weight Reading Abstraction ----</span>
+<span class="code-comment">// Handles both Wokwi simulation and real hardware</span>
+<span class="code-type">float</span> <span class="code-function">readWeight</span>(<span class="code-type">bool</span> feedingActive, <span class="code-type">bool</span> feederOpen) {
+<span class="code-preprocessor">#if</span> <span class="code-constant">SIM_FAKE_WEIGHT</span>
+  <span class="code-comment">// === WOKWI SIMULATION MODE ===</span>
+  <span class="code-comment">// Simulate weight increase during feeding</span>
+  <span class="code-keyword">if</span> (feedingActive && feederOpen) {
+    <span class="code-keyword">static</span> <span class="code-type">unsigned long</span> last = <span class="code-number">0</span>;
+    
+    <span class="code-comment">// Increment simulated weight every 300ms</span>
+    <span class="code-keyword">if</span> (<span class="code-function">millis</span>() - last > <span class="code-number">300</span>) {
+      simWeight += <span class="code-number">10.0f</span>;  <span class="code-comment">// +10g per step</span>
+      last = <span class="code-function">millis</span>();
+    }
+  }
+  
+  <span class="code-comment">// Return simulated weight value</span>
+  <span class="code-keyword">return</span> simWeight;
+  
+<span class="code-preprocessor">#else</span>
+  <span class="code-comment">// === REAL HARDWARE MODE ===</span>
+  <span class="code-comment">// Read actual HX711 load cell value</span>
+  <span class="code-comment">// Average 5 readings for stability</span>
+  <span class="code-keyword">return</span> scale.<span class="code-function">get_units</span>(<span class="code-number">5</span>);
+<span class="code-preprocessor">#endif</span>
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <div class="code-panel" data-panel="3">
+                <div class="code-window">
+                    <div class="code-header">
+                        <div class="dots">
+                            <span class="dot red"></span>
+                            <span class="dot yellow"></span>
+                            <span class="dot green"></span>
+                        </div>
+                        <span class="filename">main.cpp - Feeder Control</span>
+                    </div>
+                    <div class="code-body">
+                        <pre><code><span class="code-comment">// ---- Feeder Gate Control ----</span>
+
+<span class="code-type">void</span> <span class="code-function">openFeeder</span>() {
+  <span class="code-comment">// Rotate servo to open position (180 degrees)</span>
+  feedServo.<span class="code-function">write</span>(servoOpenAngle);
+  feederOpen = <span class="code-keyword">true</span>;
+  Serial.<span class="code-function">println</span>(<span class="code-string">"Feeder opened (180 deg)"</span>);
+}
+
+<span class="code-type">void</span> <span class="code-function">closeFeeder</span>() {
+  <span class="code-comment">// Rotate servo to closed position (0 degrees)</span>
+  feedServo.<span class="code-function">write</span>(servoCloseAngle);
+  feederOpen = <span class="code-keyword">false</span>;
+  Serial.<span class="code-function">println</span>(<span class="code-string">"Feeder closed (0 deg)"</span>);
+}
+
+<span class="code-comment">// ---- System Reset ----</span>
+<span class="code-type">void</span> <span class="code-function">resetSystemState</span>() {
+  <span class="code-comment">// Reset all state flags</span>
+  feedingActive = <span class="code-keyword">false</span>;
+  feederOpen = <span class="code-keyword">false</span>;
+  manualMode = <span class="code-keyword">false</span>;
+  
+  <span class="code-comment">// Reset weight tracking</span>
+  currentTargetWeight = <span class="code-number">0</span>;
+  lastWeightDuringFeed = <span class="code-number">0</span>;
+  currentWeight = <span class="code-number">0</span>;
+
+<span class="code-preprocessor">#if</span> <span class="code-constant">SIM_FAKE_WEIGHT</span>
+  <span class="code-comment">// Reset simulation weight</span>
+  simWeight = <span class="code-number">0.0f</span>;
+<span class="code-preprocessor">#else</span>
+  <span class="code-comment">// Tare the load cell (zero calibration)</span>
+  scale.<span class="code-function">tare</span>();
+<span class="code-preprocessor">#endif</span>
+
+  <span class="code-comment">// Ensure feeder is closed</span>
+  <span class="code-function">closeFeeder</span>();
+  <span class="code-function">updateDisplay</span>();
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <div class="code-panel" data-panel="4">
+                <div class="code-window">
+                    <div class="code-header">
+                        <div class="dots">
+                            <span class="dot red"></span>
+                            <span class="dot yellow"></span>
+                            <span class="dot green"></span>
+                        </div>
+                        <span class="filename">main.cpp - Setup Function</span>
+                    </div>
+                    <div class="code-body">
+                        <pre><code><span class="code-type">void</span> <span class="code-function">setup</span>() {
+  <span class="code-comment">// Initialize serial communication</span>
+  Serial.<span class="code-function">begin</span>(<span class="code-number">115200</span>);
+
+  <span class="code-comment">// Initialize I2C bus (SDA=21, SCL=22)</span>
+  <span class="code-comment">// Shared between RTC and LCD</span>
+  Wire.<span class="code-function">begin</span>(<span class="code-number">21</span>, <span class="code-number">22</span>);
+
+  <span class="code-comment">// Configure button pins with internal pull-up resistors</span>
+  <span class="code-function">pinMode</span>(<span class="code-constant">BUTTON_DISPLAY</span>, <span class="code-constant">INPUT_PULLUP</span>);
+  <span class="code-function">pinMode</span>(<span class="code-constant">BUTTON_SETTING</span>, <span class="code-constant">INPUT_PULLUP</span>);
+  <span class="code-function">pinMode</span>(<span class="code-constant">BUTTON_UP</span>, <span class="code-constant">INPUT_PULLUP</span>);
+  <span class="code-function">pinMode</span>(<span class="code-constant">BUTTON_DOWN</span>, <span class="code-constant">INPUT_PULLUP</span>);
+
+  <span class="code-comment">// Initialize LCD display</span>
+  lcd.<span class="code-function">init</span>();
+  lcd.<span class="code-function">backlight</span>();
+  lcd.<span class="code-function">setCursor</span>(<span class="code-number">0</span>, <span class="code-number">0</span>);
+  lcd.<span class="code-function">print</span>(<span class="code-string">"Pet Feeder v2.0"</span>);
+  lcd.<span class="code-function">setCursor</span>(<span class="code-number">0</span>, <span class="code-number">1</span>);
+  lcd.<span class="code-function">print</span>(<span class="code-string">"Initializing..."</span>);
+
+  <span class="code-comment">// Initialize RTC module</span>
+  rtc_ok = rtc.<span class="code-function">begin</span>();
+  <span class="code-keyword">if</span> (!rtc_ok) {
+    Serial.<span class="code-function">println</span>(<span class="code-string">"RTC not found!"</span>);
+  } <span class="code-keyword">else if</span> (!rtc.<span class="code-function">isrunning</span>()) {
+    <span class="code-comment">// Set RTC to compile time if not running</span>
+    rtc.<span class="code-function">adjust</span>(<span class="code-function">DateTime</span>(<span class="code-function">F</span>(__DATE__), <span class="code-function">F</span>(__TIME__)));
+  }
+
+  <span class="code-comment">// Initialize servo motor</span>
+  feedServo.<span class="code-function">attach</span>(<span class="code-constant">SERVO_PIN</span>);
+  feedServo.<span class="code-function">write</span>(servoCloseAngle);  <span class="code-comment">// Start closed</span>
+
+  <span class="code-comment">// Initialize HX711 load cell</span>
+  scale.<span class="code-function">begin</span>(<span class="code-constant">HX711_DT_PIN</span>, <span class="code-constant">HX711_SCK_PIN</span>);
+  <span class="code-function">delay</span>(<span class="code-number">200</span>);  <span class="code-comment">// Settling time</span>
+  scale.<span class="code-function">set_scale</span>(calibration_factor);
+  scale.<span class="code-function">tare</span>();  <span class="code-comment">// Zero calibration</span>
+
+  <span class="code-function">delay</span>(<span class="code-number">800</span>);
+  lcd.<span class="code-function">clear</span>();
+  
+  Serial.<span class="code-function">println</span>(<span class="code-string">"Pet Feeding System Ready!"</span>);
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Wokwi Configuration -->
+    <section class="wokwi-section">
+        <h2 class="section-title">Wokwi Configuration</h2>
+        <p class="section-subtitle">Complete hardware simulation setup</p>
+
+        <div class="wokwi-content">
+            <div class="wokwi-grid">
+                <div>
+                    <img src="hardware-circuit.png" alt="Wokwi Circuit" class="circuit-image">
+                    <p style="text-align: center; margin-top: 1rem; color: var(--secondary);">
+                        Complete ESP32 circuit in Wokwi simulator
+                    </p>
+                </div>
+
+                <div>
+                    <div class="json-display">
+                        <pre><code>{
+  "version": 1,
+  "author": "임민석",
+  "editor": "wokwi",
+  "parts": [
+    {
+      "type": "board-esp32-devkit-c-v4",
+      "id": "esp"
+    },
+    {
+      "type": "wokwi-hx711",
+      "id": "cell1",
+      "attrs": { "type": "5kg" }
+    },
+    {
+      "type": "wokwi-ds1307",
+      "id": "rtc1"
+    },
+    {
+      "type": "wokwi-servo",
+      "id": "servo1"
+    },
+    {
+      "type": "wokwi-lcd2004",
+      "id": "lcd2",
+      "attrs": { "pins": "i2c" }
+    },
+    ...
+  ],
+  "connections": [
+    ["esp:3V3", "bb1:tp.1", "red"],
+    ["esp:GND", "bb1:tn.1", "black"],
+    ...
+  ]
+}</code></pre>
+                    </div>
+                    <div style="text-align: center;">
+                        <a href="#" class="download-btn" onclick="downloadJSON(); return false;">
+                            Download Complete diagram.json
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p><strong>Minseok Lim (임민석)</strong></p>
+        <p>Student ID: 20011935</p>
+        <p>Intelligent Mechatronics Engineering, Sejong University</p>
+        <p style="margin-top: 2rem;">
+            <a href="https://github.com/CloudTree-comet" target="_blank">GitHub: CloudTree-comet</a>
+        </p>
+        <p style="margin-top: 1rem; opacity: 0.6;">IoT Systems Design Course - Team D Pet Feeder Project</p>
+    </footer>
+
+    <script>
+        // Architecture Card Stack
+        function showArchCard(index) {
+            const cards = document.querySelectorAll('.architecture-card');
+            const buttons = document.querySelectorAll('.card-selector button');
+            
+            buttons.forEach((btn, i) => {
+                btn.classList.toggle('active', i === index);
+            });
+            
+            cards.forEach((card, i) => {
+                card.classList.remove('active', 'prev');
+                if (i === index) {
+                    card.classList.add('active');
+                } else if (i === index - 1) {
+                    card.classList.add('prev');
+                }
+            });
+        }
+
+        // Code Panel Switching
+        function showCodePanel(index) {
+            const panels = document.querySelectorAll('.code-panel');
+            const buttons = document.querySelectorAll('.code-tab-btn');
+            
+            buttons.forEach((btn, i) => {
+                btn.classList.toggle('active', i === index);
+            });
+            
+            panels.forEach((panel, i) => {
+                panel.classList.toggle('active', i === index);
+            });
+        }
+
+        // Download JSON
+        function downloadJSON() {
+            const jsonData = {
+                "version": 1,
+                "author": "임민석",
+                "editor": "wokwi",
+                "parts": [
+                    { "type": "wokwi-breadboard-half", "id": "bb1", "top": 35.4, "left": -45.2, "attrs": {} },
+                    { "type": "board-esp32-devkit-c-v4", "id": "esp", "top": 19.2, "left": -158.36, "attrs": {} },
+                    { "type": "wokwi-hx711", "id": "cell1", "top": -74.2, "left": -45.4, "attrs": { "type": "5kg" } },
+                    { "type": "wokwi-ds1307", "id": "rtc1", "top": -63, "left": 172.9, "attrs": {} },
+                    { "type": "wokwi-servo", "id": "servo1", "top": 122.8, "left": 297.6, "attrs": {} },
+                    { "type": "wokwi-lcd2004", "id": "lcd2", "top": -60.8, "left": 293.6, "attrs": { "pins": "i2c" } },
+                    { "type": "wokwi-pushbutton", "id": "btn1", "top": 246.2, "left": 316.8, "attrs": { "color": "red", "xray": "1" } },
+                    { "type": "wokwi-pushbutton", "id": "btn2", "top": 207.8, "left": 393.6, "attrs": { "color": "blue", "xray": "1" } },
+                    { "type": "wokwi-pushbutton", "id": "btn3", "top": 284.6, "left": 393.6, "attrs": { "color": "blue", "xray": "1" } },
+                    { "type": "wokwi-pushbutton", "id": "btn4", "top": 246.2, "left": 480, "attrs": { "color": "green", "xray": "1" } }
+                ],
+                "connections": [
+                    [ "esp:TX", "$serialMonitor:RX", "", [] ],
+                    [ "esp:RX", "$serialMonitor:TX", "", [] ],
+                    [ "esp:3V3", "bb1:tp.1", "red", [ "v-38.4", "h142.55" ] ],
+                    [ "esp:GND.2", "bb1:tn.1", "black", [ "h19.2", "v9.7" ] ],
+                    [ "esp:GND.1", "bb1:bn.1", "black", [ "h0" ] ],
+                    [ "cell1:VCC", "bb1:tp.3", "red", [ "h0" ] ],
+                    [ "cell1:GND", "bb1:tn.4", "black", [ "h57.6", "v105.3" ] ],
+                    [ "cell1:SCK", "esp:5", "green", [ "h-134.4", "v162.4" ] ],
+                    [ "cell1:DT", "esp:4", "blue", [ "h-144", "v181.9", "h124.8" ] ],
+                    [ "rtc1:SDA", "bb1:18t.c", "blue", [ "h-57.6", "v134.1" ] ],
+                    [ "rtc1:SCL", "bb1:19t.c", "green", [ "h-48", "v124.6" ] ],
+                    [ "bb1:18t.a", "esp:21", "blue", [ "h-96", "v9.6" ] ],
+                    [ "esp:22", "bb1:19t.a", "green", [ "h0" ] ],
+                    [ "servo1:PWM", "esp:18", "orange", [ "v-28.6", "h-326.4", "v-9.6" ] ],
+                    [ "bb1:18t.d", "lcd2:SDA", "blue", [ "h67.2", "v-124.8", "h96" ] ],
+                    [ "lcd2:SCL", "bb1:19t.e", "green", [ "h-86.4", "v125.1" ] ],
+                    [ "bb1:7b.f", "bb1:tn.6", "black", [ "v0" ] ],
+                    [ "bb1:28b.h", "bb1:tn.22", "black", [ "h-9.6", "v-115.1" ] ],
+                    [ "bb1:16b.h", "bb1:tn.11", "black", [ "v-57.6", "h-20.8" ] ],
+                    [ "bb1:23b.h", "bb1:tn.18", "black", [ "v0" ] ],
+                    [ "btn1:2.l", "bb1:tn.2", "black", [ "h0" ] ],
+                    [ "btn1:1.l", "esp:12", "red", [ "h-489.6", "v-96" ] ],
+                    [ "btn3:2.l", "bb1:tn.7", "black", [ "h-336", "v-259" ] ],
+                    [ "btn2:2.l", "bb1:tn.8", "black", [ "h0" ] ],
+                    [ "btn2:1.l", "esp:14", "blue", [ "h-576", "v-67.2" ] ],
+                    [ "btn3:1.l", "esp:15", "blue", [ "h-441.6", "v-105.6" ] ],
+                    [ "btn4:2.l", "bb1:tn.9", "black", [ "h0" ] ],
+                    [ "btn4:1.l", "esp:13", "green", [ "h-643.2", "v-76.8" ] ],
+                    [ "esp:5V", "bb1:bp.3", "red", [ "h0.15", "v28.8", "h163.2" ] ],
+                    [ "rtc1:5V", "bb1:bp.16", "red", [ "h0" ] ],
+                    [ "rtc1:GND", "bb1:bn.16", "black", [ "h0" ] ],
+                    [ "lcd2:GND", "bb1:bn.20", "black", [ "h0" ] ],
+                    [ "lcd2:VCC", "bb1:bp.19", "red", [ "h0" ] ],
+                    [ "servo1:V+", "bb1:bp.22", "red", [ "h0" ] ],
+                    [ "servo1:GND", "bb1:bn.23", "black", [ "h0" ] ]
+                ],
+                "dependencies": {}
+            };
+            
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(jsonData, null, 2));
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", "diagram.json");
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+        }
+    </script>
+</body>
+</html>
