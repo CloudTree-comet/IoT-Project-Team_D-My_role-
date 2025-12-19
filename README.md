@@ -1,40 +1,59 @@
-# 🛠️ Hardware & Firmware Skeleton
-> **Lead:** Minseok (@YourGitHubID)  
-> **Core Stack:** ESP32, Wokwi, PlatformIO, C++ (Arduino Framework)
+# Hardware & Firmware Skeleton
+
+* **Lead:** Minseok (@YourGitHubID)
+* **Target Platform:** ESP32 + Wokwi Simulator
+* **Core Responsibility:** Hardware circuit design, firmware skeleton development, and sensor/actuator driver interfacing.
 
 ---
 
-## 🎯 Goal
-**ESP32**와 **Wokwi 시뮬레이터**를 기반으로 프로젝트의 뼈대를 구축합니다. 다른 팀원들이 자신의 로직(UI, 알고리즘, 통신)을 즉시 결합할 수 있도록 유연하고 안정적인 펌웨어 스켈레톤을 제공하는 것이 목표입니다.
+## 1. Hardware Configuration (Pin Map)
+
+This pin map follows the design defined in `diagram.json`. Please ensure all connections match the table below.
+
+| Component | ESP32 Pin | Interface | Power | Note |
+| :--- | :--- | :--- | :--- | :--- |
+| **HX711 (Load Cell)** | DT: 4, SCK: 5 | Serial | 3.3V | Weight measurement |
+| **Micro Servo** | GPIO 18 | PWM | 5V | Feeding gate control |
+| **RTC DS1307** | SDA: 21, SCL: 22 | I2C | 5V | Time keeping |
+| **LCD 2004** | SDA: 21, SCL: 22 | I2C | 5V | Status display (20x4) |
+| **Button (Red)** | GPIO 12 | Digital | GND | Display mode toggle |
+| **Button (Green)** | GPIO 13 | Digital | GND | Setting / Manual feed |
+| **Button (Blue UP)** | GPIO 14 | Digital | GND | Increment value |
+| **Button (Blue DOWN)**| GPIO 15 | Digital | GND | Decrement value |
 
 ---
 
-## 🏗️ Hardware Configuration (Wokwi)
-시뮬레이션 환경인 `diagram.json`을 통해 설계된 하드웨어 구성입니다. **I2C 라인 공유**를 통해 핀 효율성을 극대화했습니다.
+## 2. Firmware Architecture
 
-| Component | Interface | Pin Assignment | Description |
-| :--- | :--- | :--- | :--- |
-| **ESP32 DevKit V1** | MCU | - | Main Controller |
-| **LCD 1602** | I2C | SDA(21), SCL(22) | Status Display |
-| **RTC DS1307** | I2C | SDA(21), SCL(22) | Real-Time Clock |
-| **HX711** | Serial | DT(18), SCK(19) | Load Cell (Weight Sensor) |
-| **Micro Servo** | PWM | GPIO 13 | Feeder Gate Control |
-| **Buttons** | Digital | GPIO 14, 27... | Manual Feed & Settings |
+The firmware utilizes a modular skeleton structure to facilitate collaboration between team members.
 
----
+### Weight Data Wrapper
+A wrapper function supports both Wokwi simulation and real-world hardware.
+* **SIM_FAKE_WEIGHT 1:** Simulates weight increase during feeding in Wokwi.
+* **SIM_FAKE_WEIGHT 0:** Reads actual units from the HX711 sensor.
 
-## 📂 Development Environment
-**PlatformIO**를 사용하여 라이브러리 의존성과 하드웨어 설정을 관리합니다.
+### Main Control Loop
+The `loop()` function synchronizes hardware data and calls hooks for specific logic handlers.
 
-```ini
-; platformio.ini 핵심 설정
-[env:esp32dev]
-platform = espressif32
-board = esp32dev
-framework = arduino
-lib_deps =
-    bogde/HX711
-    adafruit/RTClib
-    marcoschwartz/LiquidCrystal_I2C
-    madhephaestus/ESP32Servo
-board_build.partitions = huge_app.csv
+```cpp
+void loop() {
+  server.handleClient(); // Web API Handling (Person C)
+
+  // 1. Hardware Data Synchronization (Minseok)
+  DateTime now = rtc_ok ? rtc.now() : ...;
+  currentWeight = readWeight(feedingActive, feederOpen);
+
+  // 2. Button & Menu Logic (Person A)
+  // Input detection and state management for settingState/manualState
+
+  // 3. Scheduling & Feeding Algorithm (Person B)
+  if (settingState == NOT_SETTING && manualState == MANUAL_IDLE) {
+    checkScheduledFeeding();
+  }
+  if (feedingActive) {
+    monitorFeeding();
+  }
+
+  // 4. Display Update (Person A/B)
+  updateDisplay();
+}
